@@ -45,19 +45,14 @@ class ColoredStr:
         self.color = color
 
         self.skip_reset = skip_reset
-
-        self.objs = list(objs)
-        for obj in objs:
-            #setattr(obj, '_parent_coloredstr', self)
-            #obj._parent_coloredstr = self
-            obj.__setattr__('parent_coloredstr', self)
-            print(dir(obj))
+        self.objs = objs
 
     def __str__(self):
         color = self.color
         if color is None:
             color = ''
 
+        # TODO: detect ansi reset and "undo" if str
         built_str = ''.join([color + str(obj) for obj in self.objs])
 
         if not self.skip_reset:
@@ -74,11 +69,6 @@ class ColoredStr:
 
         color = None
         skip_reset = False
-        if hasattr(left, '_parent_coloredstr'):
-            parent = getattr(left, 'parent_coloredstr')
-            color = parent.color
-            skip_reset = parent.skip_reset
-
         return ColoredStr(left, self, color=color, skip_reset=skip_reset)
     
     # get length without colors
@@ -99,7 +89,5 @@ for color in ALL_COLORS.keys():
 
 
 if __name__ == '__main__':
-    print(Red("this is" + Blue(' not ') + "a test"))
-
-    print(len(ColoredStr('hello', color='G') + ColoredStr('world')))
+    print(Red("this is" + Blue(' not '), "a test"))
 
