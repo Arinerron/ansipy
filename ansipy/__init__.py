@@ -60,11 +60,10 @@ class ColoredStr:
         if not self.skip_reset:
             built_str += get_ansi('', 'reset')
         
-        print('making str of ' + repr(self) + ' = ' + str(self.objs))
         return built_str
 
     def __add__(self, right):
-        return ColoredStr(self, right, color=self.color, skip_reset=self.skip_reset)
+        return ColoredStr(self, right, color=None, skip_reset=False)
 
     def __radd__(self, left):
         if isinstance(left, str):
@@ -78,6 +77,9 @@ class ColoredStr:
     def __len__(self):
         return sum([len(obj) for obj in self.objs])
 
+    
+    def __repr__(self):
+        return self.__class__.__name__ + '(' + repr(self.objs)[1:-1] + ')'
 
 
 def _create_class(color, decorator):
@@ -111,6 +113,5 @@ for color in ALL_COLORS.keys():
     for decorator in ALL_DECORATORS.keys():
         _create_class(color, decorator)
 
-if __name__ == '__main__':
-    print(Red("this is" + Bold(' not ') + "a test"))
+del _create_class
 
