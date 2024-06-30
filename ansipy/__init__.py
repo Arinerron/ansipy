@@ -4,6 +4,7 @@
 # e.g. RED = "\033[0;31m"
 #   'red': 31,
 ALL_COLORS = {
+    'reset': 0,
     'black': 30,
     'red': 31,
     'green': 32,
@@ -15,7 +16,8 @@ ALL_COLORS = {
 }
 
 ALL_DECORATORS = {
-    'reset': 0
+    'reset': 0,
+    'bold': 1
 }
 
 
@@ -45,7 +47,7 @@ class ColoredStr:
         self.color = color
 
         self.skip_reset = skip_reset
-        self.objs = objs
+        self.objs = list(objs)
 
     def __str__(self):
         color = self.color
@@ -57,7 +59,8 @@ class ColoredStr:
 
         if not self.skip_reset:
             built_str += get_ansi('', 'reset')
-
+        
+        print('making str of ' + repr(self) + ' = ' + str(self.objs))
         return built_str
 
     def __add__(self, right):
@@ -76,18 +79,38 @@ class ColoredStr:
         return sum([len(obj) for obj in self.objs])
 
 
-# define globals
-for color in ALL_COLORS.keys():
-    class_name = color.title().replace(' ', '')
+
+def _create_class(color, decorator):
+    if color == 'reset':
+        color = None
+    if decorator == 'reset':
+        decorator = None
+
+    settings = list()
+    if color != None:
+        settings.append(color)
+    if decorator != None:
+        settings.append(decorator)
+    if not settings:
+        return
+
+    class_name_pre_formatting = ' '.join(settings)
+    class_name = class_name_pre_formatting.title().replace(' ', '')
+
     globals()[class_name] = type(
         class_name,
         (ColoredStr,),
         {
-            'class_color': get_ansi(color)
+            'class_color': get_ansi(color, decorator)
         }
     )
 
 
+# define globals
+for color in ALL_COLORS.keys():
+    for decorator in ALL_DECORATORS.keys():
+        _create_class(color, decorator)
+
 if __name__ == '__main__':
-    print(Red("this is" + Blue(' not '), "a test"))
+    print(Red("this is" + Bold(' not ') + "a test"))
 
