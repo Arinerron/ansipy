@@ -39,7 +39,6 @@ def get_ansi(color='', decorator=''):
     return retval
 
 
-
 class ColoredStr:
     def __init__(self, *objs, color=None, skip_reset=False):
         if color is None:
@@ -49,12 +48,13 @@ class ColoredStr:
         self.skip_reset = skip_reset
         self.objs = list(objs)
 
+
     def __str__(self):
         color = self.color
         if color is None:
             color = ''
 
-        # TODO: detect ansi reset and "undo" if str
+        # TODO: detect ansi reset and "undo" if str <--- nvm too lazy
         built_str = ''.join([color + str(obj) for obj in self.objs])
 
         if not self.skip_reset:
@@ -62,8 +62,10 @@ class ColoredStr:
         
         return built_str
 
+
     def __add__(self, right):
         return ColoredStr(self, right, color=None, skip_reset=False)
+
 
     def __radd__(self, left):
         if isinstance(left, str):
@@ -73,6 +75,7 @@ class ColoredStr:
         skip_reset = False
         return ColoredStr(left, self, color=color, skip_reset=skip_reset)
     
+
     # get length without colors
     def __len__(self):
         return sum([len(obj) for obj in self.objs])
